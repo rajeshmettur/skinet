@@ -17,6 +17,12 @@ public class BaseSpecification<T>(Expression<Func<T, bool>> criteria) : ISpecifi
 
     public bool IsDistinct {get; private set;}
 
+    public int Take  {get; private set;}
+
+    public int Skip  {get; private set;}
+
+    public bool IsPagingEnabled  {get; private set;}
+
     protected void AddOrderByDescending(Expression<Func<T, object>> orderByDescExpression) {
         OrderByDescending = orderByDescExpression;
     }
@@ -29,7 +35,24 @@ public class BaseSpecification<T>(Expression<Func<T, bool>> criteria) : ISpecifi
     protected void ApplyDistinct(){
         IsDistinct = true;
     }
+
+    protected void ApplyPagination(int skip, int take) {
+        Take = take;
+        Skip = skip;
+        IsPagingEnabled = true;
+    }
+
+    public IQueryable<T> ApplyCriteria(IQueryable<T> query)
+    {
+        if(criteria != null)
+        {
+            query = query.Where(criteria);
+        }
+        return query;
+    }
 }
+
+
 
 public class BaseSpecification<T, TResult>(Expression<Func<T, bool>> criteria)
 : BaseSpecification<T>(criteria), ISpecification<T, TResult>
